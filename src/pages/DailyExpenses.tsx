@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { CalendarIcon, Plus, Pencil, Trash2 } from 'lucide-react';
-import { Transaction, TransactionType, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/types/database';
+import { Transaction, TransactionType, EXPENSE_CATEGORIES, INCOME_CATEGORIES, EXPENSE_DESCRIPTIONS, INCOME_DESCRIPTIONS } from '@/types/database';
 import {
   getTransactions,
   addTransaction,
@@ -49,7 +49,8 @@ export default function DailyExpenses() {
 
   // Form state
   const [formDate, setFormDate] = useState<Date>(new Date());
-  const [formDesc, setFormDesc] = useState('');
+  const [formDescSelect, setFormDescSelect] = useState('');
+  const [formDescCustom, setFormDescCustom] = useState('');
   const [formAmount, setFormAmount] = useState('');
   const [formCategory, setFormCategory] = useState('');
 
@@ -61,21 +62,23 @@ export default function DailyExpenses() {
     .filter((t) => t.date === dateStr && t.type === activeTab)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
-  const categories = activeTab === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+  const descriptions = activeTab === 'income' ? INCOME_DESCRIPTIONS : EXPENSE_DESCRIPTIONS;
 
   const openAdd = () => {
     setEditingTxn(null);
     setFormDate(selectedDate);
-    setFormDesc('');
+    setFormDescSelect('');
+    setFormDescCustom('');
     setFormAmount('');
-    setFormCategory('');
     setDialogOpen(true);
   };
 
   const openEdit = (txn: Transaction) => {
     setEditingTxn(txn);
     setFormDate(new Date(txn.date + 'T00:00:00'));
-    setFormDesc(txn.description);
+    const isPreset = (txn.type === 'income' ? INCOME_DESCRIPTIONS : EXPENSE_DESCRIPTIONS).includes(txn.description);
+    setFormDescSelect(isPreset ? txn.description : 'Others');
+    setFormDescCustom(isPreset ? '' : txn.description);
     setFormAmount(String(txn.amount));
     setFormCategory(txn.category);
     setDialogOpen(true);
@@ -83,12 +86,13 @@ export default function DailyExpenses() {
 
   const handleSave = () => {
     const amount = parseFloat(formAmount);
-    if (!formDesc.trim() || isNaN(amount) || amount <= 0 || !formCategory) return;
+    const finalDesc = formDescSelect === 'Others' ? formDescCustom.trim() : formDescSelect;
+    if (!finalDesc || isNaN(amount) || amount <= 0 || !formCategory) return;
 
     if (editingTxn) {
       const updated = updateTransaction(editingTxn.id, {
         date: format(formDate, 'yyyy-MM-dd'),
-        description: formDesc.trim(),
+        description: finalDesc,
         amount,
         category: formCategory,
       });
@@ -98,7 +102,7 @@ export default function DailyExpenses() {
         id: crypto.randomUUID(),
         type: activeTab,
         amount,
-        description: formDesc.trim(),
+        description: finalDesc,
         category: formCategory,
         date: format(formDate, 'yyyy-MM-dd'),
         createdAt: new Date().toISOString(),
@@ -297,7 +301,19 @@ export default function DailyExpenses() {
             </div>
             <div className="space-y-2">
               <Label>Description</Label>
-              <Input value={formDesc} onChange={(e) => setFormDesc(e.target.value)} placeholder="What was this for?" />
+              <Select value={formDescSelect} onValueChange={(v) => { setFormDescSelect(v); if (v !== 'Others') setFormDescCustom(''); }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select description" />
+                </SelectTrigger>
+                <SelectContent>
+                  {descriptions.map((d) => (
+                    <SelectItem key={d} value={d}>{d}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {formDescSelect === 'Others' && (
+                <Input value={formDescCustom} onChange={(e) => setFormDescCustom(e.target.value)} placeholder="Enter custom description" className="mt-2" />
+              )}
             </div>
             <div className="space-y-2">
               <Label>Amount (LKR)</Label>
@@ -310,7 +326,7 @@ export default function DailyExpenses() {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((c) => (
+                  {(activeTab === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((c) => (
                     <SelectItem key={c} value={c}>{c}</SelectItem>
                   ))}
                 </SelectContent>

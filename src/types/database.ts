@@ -46,3 +46,28 @@ export const INCOME_CATEGORIES = [
   'Refund',
   'Other Income',
 ];
+
+export const EXPENSE_DESCRIPTIONS = [
+  'Fuel',
+  'Vehicle Repair',
+  'Staff Meal',
+  'Packaging Material',
+  'Electricity Bill',
+  'Water Bill',
+  'Rent',
+  'Loading/Unloading',
+  'Market Purchase',
+  'Phone Recharge',
+  'Cleaning Supplies',
+  'Others',
+];
+
+export const INCOME_DESCRIPTIONS = [
+  'Daily Fruit Sales',
+  'Wholesale Order',
+  'Retail Sales',
+  'Delivery Charge',
+  'Advance Received',
+  'Old Stock Sale',
+  'Others',
+];
