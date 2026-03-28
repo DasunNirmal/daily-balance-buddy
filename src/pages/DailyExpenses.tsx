@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { CalendarIcon, Plus, Pencil, Trash2 } from 'lucide-react';
-import { Transaction, TransactionType, EXPENSE_CATEGORIES, INCOME_CATEGORIES } from '@/types/database';
+import { Transaction, TransactionType, EXPENSE_CATEGORIES, INCOME_CATEGORIES, EXPENSE_DESCRIPTIONS, INCOME_DESCRIPTIONS } from '@/types/database';
 import {
   getTransactions,
   addTransaction,
