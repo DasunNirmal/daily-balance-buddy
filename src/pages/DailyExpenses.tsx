@@ -86,7 +86,8 @@ export default function DailyExpenses() {
 
   const handleSave = () => {
     const amount = parseFloat(formAmount);
-    if (!formDesc.trim() || isNaN(amount) || amount <= 0 || !formCategory) return;
+    const finalDesc = formDescSelect === 'Others' ? formDescCustom.trim() : formDescSelect;
+    if (!finalDesc || isNaN(amount) || amount <= 0 || !formCategory) return;
 
     if (editingTxn) {
       const updated = updateTransaction(editingTxn.id, {
