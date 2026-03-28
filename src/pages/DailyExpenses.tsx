@@ -62,7 +62,7 @@ export default function DailyExpenses() {
     .filter((t) => t.date === dateStr && t.type === activeTab)
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 
-  const categories = activeTab === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
+  const descriptions = activeTab === 'income' ? INCOME_DESCRIPTIONS : EXPENSE_DESCRIPTIONS;
 
   const openAdd = () => {
     setEditingTxn(null);
