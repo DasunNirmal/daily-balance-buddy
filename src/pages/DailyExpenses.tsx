@@ -67,9 +67,9 @@ export default function DailyExpenses() {
   const openAdd = () => {
     setEditingTxn(null);
     setFormDate(selectedDate);
-    setFormDesc('');
+    setFormDescSelect('');
+    setFormDescCustom('');
     setFormAmount('');
-    setFormCategory('');
     setDialogOpen(true);
   };
 
