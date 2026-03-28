@@ -102,7 +102,7 @@ export default function DailyExpenses() {
         id: crypto.randomUUID(),
         type: activeTab,
         amount,
-        description: formDesc.trim(),
+        description: finalDesc,
         category: formCategory,
         date: format(formDate, 'yyyy-MM-dd'),
         createdAt: new Date().toISOString(),
