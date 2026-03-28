@@ -301,7 +301,19 @@ export default function DailyExpenses() {
             </div>
             <div className="space-y-2">
               <Label>Description</Label>
-              <Input value={formDesc} onChange={(e) => setFormDesc(e.target.value)} placeholder="What was this for?" />
+              <Select value={formDescSelect} onValueChange={(v) => { setFormDescSelect(v); if (v !== 'Others') setFormDescCustom(''); }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select description" />
+                </SelectTrigger>
+                <SelectContent>
+                  {descriptions.map((d) => (
+                    <SelectItem key={d} value={d}>{d}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {formDescSelect === 'Others' && (
+                <Input value={formDescCustom} onChange={(e) => setFormDescCustom(e.target.value)} placeholder="Enter custom description" className="mt-2" />
+              )}
             </div>
             <div className="space-y-2">
               <Label>Amount (LKR)</Label>
@@ -314,7 +326,7 @@ export default function DailyExpenses() {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {categories.map((c) => (
+                  {(activeTab === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES).map((c) => (
                     <SelectItem key={c} value={c}>{c}</SelectItem>
                   ))}
                 </SelectContent>
