@@ -76,7 +76,9 @@ export default function DailyExpenses() {
   const openEdit = (txn: Transaction) => {
     setEditingTxn(txn);
     setFormDate(new Date(txn.date + 'T00:00:00'));
-    setFormDesc(txn.description);
+    const isPreset = (txn.type === 'income' ? INCOME_DESCRIPTIONS : EXPENSE_DESCRIPTIONS).includes(txn.description);
+    setFormDescSelect(isPreset ? txn.description : 'Others');
+    setFormDescCustom(isPreset ? '' : txn.description);
     setFormAmount(String(txn.amount));
     setFormCategory(txn.category);
     setDialogOpen(true);
