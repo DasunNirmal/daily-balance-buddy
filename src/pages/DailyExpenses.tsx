@@ -312,7 +312,7 @@ export default function DailyExpenses() {
                 </SelectContent>
               </Select>
               {formDescSelect === 'Others' && (
-                <Input value={formDescCustom} onChange={(e) => setFormDescCustom(e.target.value)} placeholder="Enter custom description" className="mt-2" />
+                <Input value={formDescCustom} onChange={(e) => setFormDescCustom(e.target.value)} placeholder="Enter custom description" className="mt-4" />
               )}
             </div>
             <div className="space-y-2">
