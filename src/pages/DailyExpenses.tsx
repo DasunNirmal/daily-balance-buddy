@@ -49,7 +49,8 @@ export default function DailyExpenses() {
 
   // Form state
   const [formDate, setFormDate] = useState<Date>(new Date());
-  const [formDesc, setFormDesc] = useState('');
+  const [formDescSelect, setFormDescSelect] = useState('');
+  const [formDescCustom, setFormDescCustom] = useState('');
   const [formAmount, setFormAmount] = useState('');
   const [formCategory, setFormCategory] = useState('');
 
