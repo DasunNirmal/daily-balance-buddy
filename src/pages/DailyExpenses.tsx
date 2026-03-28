@@ -92,7 +92,7 @@ export default function DailyExpenses() {
     if (editingTxn) {
       const updated = updateTransaction(editingTxn.id, {
         date: format(formDate, 'yyyy-MM-dd'),
-        description: formDesc.trim(),
+        description: finalDesc,
         amount,
         category: formCategory,
       });
