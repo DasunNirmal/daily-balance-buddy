@@ -40,43 +40,27 @@ export function generateReport(transactions: Transaction[]) {
 
   const fmt = (n: number) => `LKR ${n.toLocaleString('en-LK', { minimumFractionDigits: 2 })}`;
 
-  const summaryY = 38;
-  doc.setTextColor(...DARK);
+  // === Carry Forward box (top, full width) ===
+  const cfY = 36;
+  const cfW = pw - 28;
+  doc.setFillColor(245, 247, 245);
+  doc.roundedRect(14, cfY, cfW, 22, 2, 2, 'F');
+  doc.setFillColor(...ACCENT);
+  doc.rect(14, cfY, cfW, 2.5, 'F');
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(120, 120, 120);
+  doc.text('Carry Forward (Opening Balance)', 18, cfY + 9);
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(...ACCENT);
+  doc.text(fmt(carryForward), 18, cfY + 18);
 
-  // Summary boxes
-  const boxW = (pw - 42) / 4;
-  const boxes = [
-    { label: 'Carry Forward', value: fmt(carryForward), color: ACCENT },
-    { label: 'Total Income', value: fmt(totalIncome), color: GREEN },
-    { label: 'Total Expenses', value: fmt(totalExpense), color: ACCENT },
-    { label: 'Net Balance', value: fmt(balance), color: balance >= 0 ? GREEN : ACCENT },
-  ];
-
-  boxes.forEach((box, i) => {
-    const x = 14 + i * (boxW + 4.5);
-    // Light background
-    doc.setFillColor(245, 247, 245);
-    doc.roundedRect(x, summaryY, boxW, 22, 2, 2, 'F');
-    // Top accent line
-    doc.setFillColor(...box.color);
-    doc.rect(x, summaryY, boxW, 2.5, 'F');
-    // Label
-    doc.setFontSize(7);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(120, 120, 120);
-    doc.text(box.label, x + 4, summaryY + 9);
-    // Value
-    doc.setFontSize(10);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(...box.color);
-    doc.text(box.value, x + 4, summaryY + 17);
-  });
-
-  // === Table ===
+  // === Transaction Table ===
   const sorted = [...transactions].sort((a, b) => a.date.localeCompare(b.date));
 
   autoTable(doc, {
-    startY: summaryY + 30,
+    startY: cfY + 30,
     head: [['Date', 'Type', 'Description', 'Category', 'Amount']],
     body: sorted.map((t) => [
       format(new Date(t.date + 'T00:00:00'), 'MMM dd, yyyy'),
@@ -105,6 +89,34 @@ export function generateReport(transactions: Transaction[]) {
         data.cell.styles.fontStyle = 'bold';
       }
     },
+  });
+
+  // === Bottom Summary (Income, Expenses, Net Balance) ===
+  const lastPage = (doc as any).internal.getNumberOfPages();
+  doc.setPage(lastPage);
+  const tableEndY = (doc as any).lastAutoTable.finalY || 100;
+  const sumY = tableEndY + 10;
+  const boxW = (pw - 38) / 3;
+  const bottomBoxes = [
+    { label: 'Total Income', value: fmt(totalIncome), color: GREEN },
+    { label: 'Total Expenses', value: fmt(totalExpense), color: ACCENT },
+    { label: 'Net Balance', value: fmt(balance), color: balance >= 0 ? GREEN : ACCENT },
+  ];
+
+  bottomBoxes.forEach((box, i) => {
+    const x = 14 + i * (boxW + 5);
+    doc.setFillColor(245, 247, 245);
+    doc.roundedRect(x, sumY, boxW, 22, 2, 2, 'F');
+    doc.setFillColor(...box.color);
+    doc.rect(x, sumY, boxW, 2.5, 'F');
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(120, 120, 120);
+    doc.text(box.label, x + 4, sumY + 9);
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(...box.color);
+    doc.text(box.value, x + 4, sumY + 17);
   });
 
   // === Footer on every page ===
