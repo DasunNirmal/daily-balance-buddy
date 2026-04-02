@@ -41,8 +41,15 @@ export function generateReport(transactions: Transaction[], dateFrom?: string, d
   doc.text('Expense Report', pw - 14, 24, { align: 'right' });
 
   // === Summary section ===
-  const totalIncome = transactions.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-  const totalExpense = transactions.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+  // Filter transactions by date range
+  const filtered = transactions.filter((t) => {
+    if (dateFrom && t.date < dateFrom) return false;
+    if (dateTo && t.date > dateTo) return false;
+    return true;
+  });
+
+  const totalIncome = filtered.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+  const totalExpense = filtered.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
   const balance = totalIncome - totalExpense;
 
   // Compute carry forward for today
