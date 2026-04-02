@@ -52,9 +52,9 @@ export function generateReport(transactions: Transaction[], dateFrom?: string, d
   const totalExpense = filtered.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
   const balance = totalIncome - totalExpense;
 
-  // Compute carry forward for today
-  const today = format(new Date(), 'yyyy-MM-dd');
-  const carryForward = computeCarryForward(today);
+  // Compute carry forward for the report start date
+  const cfDate = dateFrom || format(new Date(), 'yyyy-MM-dd');
+  const carryForward = computeCarryForward(cfDate);
 
   const fmt = (n: number) => `LKR ${n.toLocaleString('en-LK', { minimumFractionDigits: 2 })}`;
 
