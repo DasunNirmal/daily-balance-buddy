@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { FileText, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { FileText, TrendingUp, TrendingDown, DollarSign, CalendarIcon } from 'lucide-react';
 import { getTransactions } from '@/lib/storage';
 import { Transaction } from '@/types/database';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,8 @@ import { cn } from '@/lib/utils';
 import AppSidebar from '@/components/AppSidebar';
 import ThemeToggle from '@/components/ThemeToggle';
 import { generateReport } from '@/lib/report';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 
 export default function Dashboard() {
   const [transactions] = useState<Transaction[]>(getTransactions());

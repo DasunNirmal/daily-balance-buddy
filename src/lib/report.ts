@@ -9,7 +9,7 @@ const GREEN: [number, number, number] = [34, 100, 54];
 const DARK: [number, number, number] = [30, 30, 30];
 const ACCENT: [number, number, number] = [220, 120, 60];
 
-export function generateReport(transactions: Transaction[]) {
+export function generateReport(transactions: Transaction[], dateFrom?: string, dateTo?: string) {
   const doc = new jsPDF();
   const pw = doc.internal.pageSize.getWidth();
 
