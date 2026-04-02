@@ -75,7 +75,7 @@ export function generateReport(transactions: Transaction[], dateFrom?: string, d
   doc.text(fmt(carryForward), 18, cfY + 18);
 
   // === Transaction Table ===
-  const sorted = [...transactions].sort((a, b) => a.date.localeCompare(b.date));
+  const sorted = [...filtered].sort((a, b) => a.date.localeCompare(b.date));
 
   autoTable(doc, {
     startY: cfY + 30,
