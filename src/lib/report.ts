@@ -9,7 +9,7 @@ const GREEN: [number, number, number] = [34, 100, 54];
 const DARK: [number, number, number] = [30, 30, 30];
 const ACCENT: [number, number, number] = [220, 120, 60];
 
-export function generateReport(transactions: Transaction[]) {
+export function generateReport(transactions: Transaction[], dateFrom?: string, dateTo?: string) {
   const doc = new jsPDF();
   const pw = doc.internal.pageSize.getWidth();
 
@@ -22,21 +22,39 @@ export function generateReport(transactions: Transaction[]) {
   doc.setFont('helvetica', 'bold');
   doc.text('Henuka Fresh Fruits', 14, 14);
 
+  const rangeLabel = dateFrom && dateTo
+    ? `${format(new Date(dateFrom + 'T00:00:00'), 'MMM dd, yyyy')} - ${format(new Date(dateTo + 'T00:00:00'), 'MMM dd, yyyy')}`
+    : dateFrom
+    ? `From ${format(new Date(dateFrom + 'T00:00:00'), 'MMM dd, yyyy')}`
+    : dateTo
+    ? `Until ${format(new Date(dateTo + 'T00:00:00'), 'MMM dd, yyyy')}`
+    : 'All Time';
+
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Generated: ${format(new Date(), 'MMMM dd, yyyy')}`, pw - 14, 14, { align: 'right' });
+  doc.text(`Generated: ${format(new Date(), 'MMMM dd, yyyy')}`, pw - 14, 10, { align: 'right' });
 
   doc.setFontSize(10);
-  doc.text('Expense Report', pw - 14, 22, { align: 'right' });
+  doc.text(`Period: ${rangeLabel}`, pw - 14, 18, { align: 'right' });
+
+  doc.setFontSize(9);
+  doc.text('Expense Report', pw - 14, 24, { align: 'right' });
 
   // === Summary section ===
-  const totalIncome = transactions.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0);
-  const totalExpense = transactions.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+  // Filter transactions by date range
+  const filtered = transactions.filter((t) => {
+    if (dateFrom && t.date < dateFrom) return false;
+    if (dateTo && t.date > dateTo) return false;
+    return true;
+  });
+
+  const totalIncome = filtered.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+  const totalExpense = filtered.filter((t) => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
   const balance = totalIncome - totalExpense;
 
-  // Compute carry forward for today
-  const today = format(new Date(), 'yyyy-MM-dd');
-  const carryForward = computeCarryForward(today);
+  // Compute carry forward for the report start date
+  const cfDate = dateFrom || format(new Date(), 'yyyy-MM-dd');
+  const carryForward = computeCarryForward(cfDate);
 
   const fmt = (n: number) => `LKR ${n.toLocaleString('en-LK', { minimumFractionDigits: 2 })}`;
 
@@ -57,7 +75,7 @@ export function generateReport(transactions: Transaction[]) {
   doc.text(fmt(carryForward), 18, cfY + 18);
 
   // === Transaction Table ===
-  const sorted = [...transactions].sort((a, b) => a.date.localeCompare(b.date));
+  const sorted = [...filtered].sort((a, b) => a.date.localeCompare(b.date));
 
   autoTable(doc, {
     startY: cfY + 30,
