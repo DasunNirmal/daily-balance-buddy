@@ -40,7 +40,34 @@ export default function Dashboard() {
         <header className="flex items-center justify-between border-b border-border px-6 py-4">
           <h1 className="text-xl font-bold text-foreground">Dashboard</h1>
           <div className="flex items-center gap-3">
-            <Button onClick={() => generateReport(transactions)} variant="outline" className="gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className={cn("gap-2 text-sm", !fromDate && "text-muted-foreground")}>
+                  <CalendarIcon className="h-4 w-4" />
+                  {fromDate ? format(fromDate, 'MMM dd, yyyy') : 'From date'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar mode="single" selected={fromDate} onSelect={setFromDate} initialFocus className="p-3 pointer-events-auto" />
+              </PopoverContent>
+            </Popover>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className={cn("gap-2 text-sm", !toDate && "text-muted-foreground")}>
+                  <CalendarIcon className="h-4 w-4" />
+                  {toDate ? format(toDate, 'MMM dd, yyyy') : 'To date'}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <Calendar mode="single" selected={toDate} onSelect={setToDate} initialFocus className="p-3 pointer-events-auto" />
+              </PopoverContent>
+            </Popover>
+            {(fromDate || toDate) && (
+              <Button variant="ghost" size="sm" onClick={() => { setFromDate(undefined); setToDate(undefined); }}>
+                Clear
+              </Button>
+            )}
+            <Button onClick={() => generateReport(transactions, fromStr, toStr)} variant="outline" className="gap-2">
               <FileText className="h-4 w-4" />
               Generate Report
             </Button>
