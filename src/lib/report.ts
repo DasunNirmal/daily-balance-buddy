@@ -22,12 +22,23 @@ export function generateReport(transactions: Transaction[], dateFrom?: string, d
   doc.setFont('helvetica', 'bold');
   doc.text('Henuka Fresh Fruits', 14, 14);
 
+  const rangeLabel = dateFrom && dateTo
+    ? `${format(new Date(dateFrom + 'T00:00:00'), 'MMM dd, yyyy')} - ${format(new Date(dateTo + 'T00:00:00'), 'MMM dd, yyyy')}`
+    : dateFrom
+    ? `From ${format(new Date(dateFrom + 'T00:00:00'), 'MMM dd, yyyy')}`
+    : dateTo
+    ? `Until ${format(new Date(dateTo + 'T00:00:00'), 'MMM dd, yyyy')}`
+    : 'All Time';
+
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Generated: ${format(new Date(), 'MMMM dd, yyyy')}`, pw - 14, 14, { align: 'right' });
+  doc.text(`Generated: ${format(new Date(), 'MMMM dd, yyyy')}`, pw - 14, 10, { align: 'right' });
 
   doc.setFontSize(10);
-  doc.text('Expense Report', pw - 14, 22, { align: 'right' });
+  doc.text(`Period: ${rangeLabel}`, pw - 14, 18, { align: 'right' });
+
+  doc.setFontSize(9);
+  doc.text('Expense Report', pw - 14, 24, { align: 'right' });
 
   // === Summary section ===
   const totalIncome = transactions.filter((t) => t.type === 'income').reduce((s, t) => s + t.amount, 0);
